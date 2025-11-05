@@ -26,5 +26,5 @@
 			"touch-slide": ["../library/src"]
 		}
 	},
-	"include": ["src"]
+	"include": ["src", "../library/src/components/Sidebar.tsx"]
 }

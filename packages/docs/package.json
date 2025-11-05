@@ -15,7 +15,11 @@
 	"author": "Lucio D'Alessandro",
 	"license": "MIT",
 	"dependencies": {
-		"@luciodale/touch-slide": "workspace:*"
+		"@luciodale/touch-slide": "workspace:*",
+		"@tailwindcss/vite": "^4.1.16",
+		"clsx": "^2.1.1",
+		"tailwind-merge": "^3.3.1",
+		"tailwindcss": "^4.1.16"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.53.1",

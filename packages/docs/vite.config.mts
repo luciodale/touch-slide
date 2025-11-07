@@ -15,7 +15,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "touch-slide": resolve(__dirname, "../library/src"),
+      "@luciodale/swipe-pane": resolve(__dirname, "../library/src"),
     },
   },
 });

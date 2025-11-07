@@ -17,7 +17,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "touch-slide": "packages/library/src",
+      "swipe-pane": "packages/library/src",
     },
   },
 });

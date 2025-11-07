@@ -1,7 +1,7 @@
 {
-	"name": "touch-slide-docs",
+	"name": "swipe-pane-docs",
 	"version": "0.0.27",
-	"description": "Documentation and demo site for touch-slide.",
+	"description": "Documentation and demo site for swipe-pane.",
 	"private": true,
 	"scripts": {
 		"dev": "vite",
@@ -15,7 +15,7 @@
 	"author": "Lucio D'Alessandro",
 	"license": "MIT",
 	"dependencies": {
-		"@luciodale/touch-slide": "workspace:*",
+		"@luciodale/swipe-pane": "workspace:*",
 		"@tailwindcss/vite": "^4.1.16",
 		"clsx": "^2.1.1",
 		"tailwind-merge": "^3.3.1",

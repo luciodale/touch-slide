@@ -28,6 +28,17 @@ export type DragRefs = {
 	prevXRef: RefObject<number | null>;
 };
 
+export type SidebarProps = {
+	className?: string;
+	transitionMs?: number;
+	paneWidthPx?: number;
+	isAbsolute?: boolean;
+	edgeActivationWidthPx?: number;
+	dragActivationDeltaPx?: number;
+	showOverlay?: boolean;
+	closeSidebarOnOverlayClick?: boolean;
+};
+
 export const LEFT_TRANSITION_OPEN_MS = 200;
 export const LEFT_TRANSITION_CLOSE_MS = 300;
 export const RIGHT_TRANSITION_OPEN_MS = 200;

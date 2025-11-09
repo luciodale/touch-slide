@@ -2,20 +2,12 @@ import {
 	LEFT_PANE_WIDTH_PX,
 	LEFT_TRANSITION_CLOSE_MS,
 	LEFT_TRANSITION_OPEN_MS,
+	type SidebarProps,
 	applyClosePaneStyles,
 } from "../swipePaneShared";
 import { useSwipeLeftPane } from "../useSwipeLeftPane";
 import { cn } from "../utils";
 import { Overlay } from "./Overlay";
-
-type SidebarProps = {
-	className?: string;
-	transitionMs?: number;
-	paneWidthPx?: number;
-	isAbsolute?: boolean;
-	edgeActivationWidthPx?: number;
-	dragActivationDeltaPx?: number;
-};
 
 export function SidebarLeft({
 	className,
@@ -24,6 +16,8 @@ export function SidebarLeft({
 	isAbsolute,
 	edgeActivationWidthPx,
 	dragActivationDeltaPx,
+	showOverlay,
+	closeSidebarOnOverlayClick,
 }: SidebarProps) {
 	const { isLeftOpen, closeLeft, leftPaneRef, setLockedPane } = useSwipeLeftPane({
 		transitionMs,
@@ -52,13 +46,13 @@ export function SidebarLeft({
 
 	return (
 		<>
-			{/*  overlay */}
-
-			<Overlay
-				isCollapsed={!isLeftOpen}
-				setCollapsed={collapseAndUnlockPane}
-				closeSidebarOnClick={false}
-			/>
+			{showOverlay && (
+				<Overlay
+					isCollapsed={!isLeftOpen}
+					setCollapsed={collapseAndUnlockPane}
+					closeSidebarOnClick={closeSidebarOnOverlayClick}
+				/>
+			)}
 
 			<div
 				ref={leftPaneRef}

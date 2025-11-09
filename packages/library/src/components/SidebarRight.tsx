@@ -1,21 +1,13 @@
-import { cn } from "../utils";
-import { Overlay } from "./Overlay";
-
 import {
 	RIGHT_PANE_WIDTH_PX,
 	RIGHT_TRANSITION_CLOSE_MS,
 	RIGHT_TRANSITION_OPEN_MS,
+	type SidebarProps,
 	applyClosePaneStyles,
 } from "../swipePaneShared";
 import { useSwipeRightPane } from "../useSwipeRightPane";
-type SidebarProps = {
-	className?: string;
-	transitionMs?: number;
-	paneWidthPx?: number;
-	isAbsolute?: boolean;
-	edgeActivationWidthPx?: number;
-	dragActivationDeltaPx?: number;
-};
+import { cn } from "../utils";
+import { Overlay } from "./Overlay";
 
 export function SidebarRight({
 	className,
@@ -24,6 +16,8 @@ export function SidebarRight({
 	isAbsolute,
 	edgeActivationWidthPx,
 	dragActivationDeltaPx,
+	showOverlay,
+	closeSidebarOnOverlayClick,
 }: SidebarProps) {
 	const { isRightOpen, closeRight, setLockedPane, rightPaneRef } = useSwipeRightPane({
 		transitionMs,
@@ -52,8 +46,13 @@ export function SidebarRight({
 
 	return (
 		<>
-			{/*  overlay */}
-			<Overlay isCollapsed={!isRightOpen} setCollapsed={collapseAndUnlockPane} />
+			{showOverlay && (
+				<Overlay
+					isCollapsed={!isRightOpen}
+					setCollapsed={collapseAndUnlockPane}
+					closeSidebarOnClick={closeSidebarOnOverlayClick}
+				/>
+			)}
 
 			<div
 				ref={rightPaneRef}

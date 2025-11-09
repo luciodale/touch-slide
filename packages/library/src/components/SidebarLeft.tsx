@@ -1,24 +1,54 @@
+import {
+	LEFT_PANE_WIDTH_PX,
+	LEFT_TRANSITION_CLOSE_MS,
+	LEFT_TRANSITION_OPEN_MS,
+	applyClosePaneStyles,
+} from "../swipePaneShared";
 import { useSwipeLeftPane } from "../useSwipeLeftPane";
 import { cn } from "../utils";
 import { Overlay } from "./Overlay";
 
 type SidebarProps = {
 	className?: string;
+	transitionMs?: number;
+	paneWidthPx?: number;
+	isAbsolute?: boolean;
+	edgeActivationWidthPx?: number;
+	dragActivationDeltaPx?: number;
 };
 
-export function SidebarLeft({ className }: SidebarProps) {
-	const { isLeftOpen, openLeft, closeLeft, leftPaneRef, setLockedPane } = useSwipeLeftPane();
+export function SidebarLeft({
+	className,
+	transitionMs,
+	paneWidthPx,
+	isAbsolute,
+	edgeActivationWidthPx,
+	dragActivationDeltaPx,
+}: SidebarProps) {
+	const { isLeftOpen, closeLeft, leftPaneRef, setLockedPane } = useSwipeLeftPane({
+		transitionMs,
+		paneWidthPx,
+		edgeActivationWidthPx,
+		dragActivationDeltaPx,
+	});
 
-	function setIsCollapsedAndUnlockPane(shouldCollapse: boolean) {
-		if (shouldCollapse) {
-			closeLeft();
-		} else {
-			openLeft();
-		}
-		setLockedPane(null);
+	const config = {
+		widthPx: paneWidthPx ?? LEFT_PANE_WIDTH_PX,
+		transitionMsOpen: transitionMs ?? LEFT_TRANSITION_OPEN_MS,
+		transitionMsClose: transitionMs ?? LEFT_TRANSITION_CLOSE_MS,
+	};
+
+	function collapseAndUnlockPane() {
+		applyClosePaneStyles({
+			ref: leftPaneRef,
+			config,
+			side: "left",
+			afterApply: () => {
+				closeLeft();
+				setLockedPane(null);
+			},
+		});
 	}
-
-	const isAbsolute = false;
 
 	return (
 		<>
@@ -26,7 +56,7 @@ export function SidebarLeft({ className }: SidebarProps) {
 
 			<Overlay
 				isCollapsed={!isLeftOpen}
-				setIsCollapsed={setIsCollapsedAndUnlockPane}
+				setCollapsed={collapseAndUnlockPane}
 				closeSidebarOnClick={false}
 			/>
 
@@ -42,7 +72,7 @@ export function SidebarLeft({ className }: SidebarProps) {
 				)}
 			>
 				<div className="flex items-center w-full justify-between gap-4 p-2 h-14">
-					<button type="button" onClick={() => setIsCollapsedAndUnlockPane(!isLeftOpen)}>
+					<button type="button" onClick={collapseAndUnlockPane}>
 						toggle
 					</button>
 				</div>

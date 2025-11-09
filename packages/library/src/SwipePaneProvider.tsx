@@ -6,6 +6,7 @@ type SwipePaneContextType = {
 	lockedPane: LockedPane;
 	setLockedPane: (pane: LockedPane) => void;
 	leftPaneRef: React.RefObject<HTMLDivElement | null>;
+	rightPaneRef: React.RefObject<HTMLDivElement | null>;
 	isLeftOpen: boolean;
 	isRightOpen: boolean;
 	rightDragX: number | null;
@@ -24,6 +25,7 @@ export const SwipePaneProvider = ({ children }: { children: ReactNode }) => {
 	const [isRightOpen, setIsRightOpen] = useState(false);
 	const [rightDragX, setRightDragX] = useState<number | null>(null);
 	const leftPaneRef = useRef<HTMLDivElement>(null);
+	const rightPaneRef = useRef<HTMLDivElement>(null);
 
 	const openLeft = useCallback(() => setIsLeftOpen(true), []);
 	const closeLeft = useCallback(() => {
@@ -45,6 +47,7 @@ export const SwipePaneProvider = ({ children }: { children: ReactNode }) => {
 				isRightOpen,
 				rightDragX,
 				leftPaneRef,
+				rightPaneRef,
 				openLeft,
 				closeLeft,
 				openRight,

@@ -1,77 +1,46 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSwipePaneContext } from "./SwipePaneProvider";
 import {
-	ACTIVATION_DELTA_X_PX,
 	type DragRefs,
 	type DragState,
-	EDGE_SWIPE_THRESHOLD_PX,
+	LEFT_DRAG_ACTIVATION_DELTA_PX,
+	LEFT_EDGE_ACTIVATION_REGION_PX,
 	LEFT_PANE_WIDTH_PX,
+	LEFT_TRANSITION_CLOSE_MS,
+	LEFT_TRANSITION_OPEN_MS,
 	type LeftPaneCallbacks,
+	type PaneConfig,
+	applyClosePaneStyles,
+	applyDragPaneStyles,
+	applyOpenPaneStyles,
+	findChangedTouch,
 	handleDragCancel,
 	handleDragStart,
+	hasTrackedTouchEnded,
 	isEditableTarget,
 } from "./swipePaneShared";
 import { useMediaQuery } from "./useMediaQuery";
 
 type HandleLeftDragMoveProps = {
 	refs: DragRefs;
-	leftPaneRef: React.RefObject<HTMLDivElement | null>;
 	callbacks: LeftPaneCallbacks;
 	currentX: number;
 	preventDefault: () => void;
 	lockPane: () => void;
+	config: PaneConfig;
+	edgeActivationWidthPx: number;
+	dragActivationDeltaPx: number;
 };
-
-function openLeftPane(leftPaneRef: React.RefObject<HTMLDivElement | null>, callback: () => void) {
-	if (!leftPaneRef.current) return;
-	requestAnimationFrame(() => {
-		if (leftPaneRef.current) {
-			console.log("OPEN add transition");
-			leftPaneRef.current.style.transition = "transform 0.2s ease, width 0.2s ease";
-		}
-	});
-
-	setTimeout(() => {
-		requestAnimationFrame(() => {
-			if (leftPaneRef.current) {
-				console.log("OPEN transform nothing width 320px");
-
-				leftPaneRef.current.style.transform = "";
-				leftPaneRef.current.style.width = "320px";
-				callback();
-			}
-		});
-	}, 0);
-}
-
-function closeLeftPane(leftPaneRef: React.RefObject<HTMLDivElement | null>, callback: () => void) {
-	if (!leftPaneRef.current) return;
-	requestAnimationFrame(() => {
-		if (leftPaneRef.current) {
-			console.log("CLOSE add transition");
-			leftPaneRef.current.style.transition = "transform 0.3s ease, width 0.3s ease";
-		}
-	});
-
-	setTimeout(() => {
-		requestAnimationFrame(() => {
-			if (leftPaneRef.current) {
-				console.log("CLOSE transform translateX(-100%) width 0px");
-				leftPaneRef.current.style.transform = "translateX(-100%)";
-				leftPaneRef.current.style.width = "0px";
-				callback();
-			}
-		});
-	}, 0);
-}
 
 const handleLeftDragMove = ({
 	refs,
-	leftPaneRef,
 	callbacks,
 	currentX,
 	preventDefault,
 	lockPane,
+	config,
+	edgeActivationWidthPx,
+	dragActivationDeltaPx,
 }: HandleLeftDragMoveProps) => {
 	if (!refs.draggingRef.current) return;
 
@@ -79,7 +48,7 @@ const handleLeftDragMove = ({
 
 	if (
 		!refs.draggingRef.current.isActivated &&
-		Math.abs(swipingDistanceFromInitialDrag) >= ACTIVATION_DELTA_X_PX
+		Math.abs(swipingDistanceFromInitialDrag) >= dragActivationDeltaPx
 	) {
 		refs.draggingRef.current.isActivated = true;
 		lockPane();
@@ -90,40 +59,38 @@ const handleLeftDragMove = ({
 	refs.prevXRef.current = refs.currentXRef.current;
 	refs.currentXRef.current = currentX;
 
-	const leftOpen = callbacks.getIsLeftOpen();
+	const leftOpen = callbacks.getIsOpen();
 
 	let isValidGesture = false;
 
 	if (leftOpen) {
 		isValidGesture = true;
-	} else if (refs.draggingRef.current.startX <= EDGE_SWIPE_THRESHOLD_PX) {
+	} else if (refs.draggingRef.current.startX <= edgeActivationWidthPx) {
 		isValidGesture = true;
 	}
 
 	if (!isValidGesture) {
 		refs.draggingRef.current = null;
-		callbacks.onLeftDrag?.(null);
+		callbacks.onDrag?.(null);
 		return;
 	}
 
 	preventDefault();
 
+	const paneWidthPx = config.widthPx;
+
 	if (leftOpen) {
 		const translateX = Math.min(
 			0,
-			Math.max(
-				-LEFT_PANE_WIDTH_PX,
-				// add activation delta to avoid a sudden jump when starting to swipe to close the pane.
-				swipingDistanceFromInitialDrag + ACTIVATION_DELTA_X_PX,
-			),
+			Math.max(-paneWidthPx, swipingDistanceFromInitialDrag + dragActivationDeltaPx),
 		);
-		callbacks.onLeftDrag?.(translateX);
-	} else if (refs.draggingRef.current.startX <= EDGE_SWIPE_THRESHOLD_PX) {
+		callbacks.onDrag?.(translateX);
+	} else if (refs.draggingRef.current.startX <= edgeActivationWidthPx) {
 		const translateX = Math.min(
 			0,
-			Math.max(-LEFT_PANE_WIDTH_PX, -LEFT_PANE_WIDTH_PX + swipingDistanceFromInitialDrag),
+			Math.max(-paneWidthPx, -paneWidthPx + swipingDistanceFromInitialDrag - dragActivationDeltaPx),
 		);
-		callbacks.onLeftDrag?.(translateX);
+		callbacks.onDrag?.(translateX);
 	}
 };
 
@@ -132,6 +99,8 @@ type HandleLeftDragEndProps = {
 	leftPaneRef: React.RefObject<HTMLDivElement | null>;
 	callbacks: LeftPaneCallbacks;
 	unlockPane: () => void;
+	config: PaneConfig;
+	edgeActivationWidthPx: number;
 };
 
 const handleLeftDragEnd = ({
@@ -139,14 +108,15 @@ const handleLeftDragEnd = ({
 	leftPaneRef,
 	callbacks,
 	unlockPane,
+	config,
+	edgeActivationWidthPx,
 }: HandleLeftDragEndProps) => {
-	console.log("HANDLE LEFT DRAG END");
 	if (!refs.draggingRef.current) return;
 
 	const currentX = refs.currentXRef.current ?? refs.draggingRef.current.startX;
 	const prevX = refs.prevXRef.current ?? refs.draggingRef.current.startX;
 	const startX = refs.draggingRef.current.startX;
-	const leftOpen = callbacks.getIsLeftOpen();
+	const leftOpen = callbacks.getIsOpen();
 
 	refs.draggingRef.current = null;
 	refs.currentXRef.current = null;
@@ -155,27 +125,37 @@ const handleLeftDragEnd = ({
 	const swipedRight = currentX >= prevX;
 	const swipedLeft = currentX < prevX;
 
-	const lessThanEdgeSwipeThreshold = startX <= EDGE_SWIPE_THRESHOLD_PX;
+	const lessThanEdgeSwipeThreshold = startX <= edgeActivationWidthPx;
 
 	let shouldUnlock = false;
 
 	if (leftOpen) {
 		if (swipedLeft) {
-			closeLeftPane(leftPaneRef, callbacks.closeLeft);
+			applyClosePaneStyles({
+				ref: leftPaneRef,
+				config,
+				side: "left",
+				afterApply: callbacks.closePane,
+			});
 			shouldUnlock = true; // Pane closed, unlock
 		} else {
-			openLeftPane(leftPaneRef, callbacks.openLeft);
+			applyOpenPaneStyles({ ref: leftPaneRef, config, afterApply: callbacks.openPane });
 			// Pane stays open, keep locked
 		}
-		callbacks.onLeftDrag?.(null);
+		callbacks.onDrag?.(null);
 	} else if (lessThanEdgeSwipeThreshold && swipedRight) {
-		openLeftPane(leftPaneRef, callbacks.openLeft);
+		applyOpenPaneStyles({ ref: leftPaneRef, config, afterApply: callbacks.openPane });
 		// Pane opened, keep locked
-		callbacks.onLeftDrag?.(null);
+		callbacks.onDrag?.(null);
 	} else {
 		shouldUnlock = true; // Gesture ended without opening
-		closeLeftPane(leftPaneRef, callbacks.closeLeft);
-		callbacks.onLeftDrag?.(null);
+		applyClosePaneStyles({
+			ref: leftPaneRef,
+			config,
+			side: "left",
+			afterApply: callbacks.closePane,
+		});
+		callbacks.onDrag?.(null);
 	}
 
 	if (shouldUnlock) {
@@ -183,7 +163,14 @@ const handleLeftDragEnd = ({
 	}
 };
 
-export function useSwipeLeftPane() {
+type PaneOptions = {
+	transitionMs?: number;
+	paneWidthPx?: number;
+	edgeActivationWidthPx?: number;
+	dragActivationDeltaPx?: number;
+};
+
+export function useSwipeLeftPane(options?: PaneOptions) {
 	const isSmallScreen = useMediaQuery("small");
 	const { lockedPane, setLockedPane, isLeftOpen, openLeft, closeLeft, leftPaneRef } =
 		useSwipePaneContext();
@@ -192,27 +179,26 @@ export function useSwipeLeftPane() {
 	const currentXRef = useRef<number | null>(null);
 	const prevXRef = useRef<number | null>(null);
 
+	const config: PaneConfig = useMemo(
+		() => ({
+			widthPx: options?.paneWidthPx ?? LEFT_PANE_WIDTH_PX,
+			transitionMsOpen: options?.transitionMs ?? LEFT_TRANSITION_OPEN_MS,
+			transitionMsClose: options?.transitionMs ?? LEFT_TRANSITION_CLOSE_MS,
+		}),
+		[options?.paneWidthPx, options?.transitionMs],
+	);
+	const edgeActivationWidthPx = options?.edgeActivationWidthPx ?? LEFT_EDGE_ACTIVATION_REGION_PX;
+	const dragActivationDeltaPx = options?.dragActivationDeltaPx ?? LEFT_DRAG_ACTIVATION_DELTA_PX;
+
 	useEffect(() => {
 		if (!isSmallScreen) return;
 		if (lockedPane === "right") return;
 
 		const callbacks: LeftPaneCallbacks = {
-			getIsLeftOpen: () => isLeftOpen,
-			openLeft,
-			closeLeft,
-			onLeftDrag: (px) => {
-				if (leftPaneRef.current) {
-					console.log("ON LEFT DRAG add transition none width 320px");
-					leftPaneRef.current.style.transition = "none";
-				}
-
-				requestAnimationFrame(() => {
-					if (leftPaneRef.current) {
-						leftPaneRef.current.style.width = "320px";
-						if (px !== null) leftPaneRef.current.style.transform = `translateX(${px}px)`;
-					}
-				});
-			},
+			getIsOpen: () => isLeftOpen,
+			openPane: openLeft,
+			closePane: closeLeft,
+			onDrag: (px) => applyDragPaneStyles({ ref: leftPaneRef, config, translateX: px }),
 		};
 
 		const refs: DragRefs = {
@@ -231,8 +217,14 @@ export function useSwipeLeftPane() {
 
 			const firstTouch = e.changedTouches[0];
 
-			if (callbacks.getIsLeftOpen() || firstTouch.clientX <= EDGE_SWIPE_THRESHOLD_PX) {
-				handleDragStart(refs, firstTouch.clientX, firstTouch.clientY, firstTouch.identifier, false);
+			if (callbacks.getIsOpen() || firstTouch.clientX <= edgeActivationWidthPx) {
+				handleDragStart({
+					refs,
+					clientX: firstTouch.clientX,
+					clientY: firstTouch.clientY,
+					touchId: firstTouch.identifier,
+					isMouse: false,
+				});
 			}
 		}
 
@@ -241,23 +233,18 @@ export function useSwipeLeftPane() {
 			if (!draggingRef.current || draggingRef.current.isMouse) return;
 
 			const trackedId = draggingRef.current.activeTouchId;
-			let changedTouch: Touch | null = null;
-			for (let i = 0; i < e.changedTouches.length; i++) {
-				const candidateTouch = e.changedTouches[i];
-				if (trackedId == null || candidateTouch.identifier === trackedId) {
-					changedTouch = candidateTouch;
-					break;
-				}
-			}
+			const changedTouch = findChangedTouch(e.changedTouches, trackedId);
 			if (!changedTouch) return;
 
 			handleLeftDragMove({
 				refs,
-				leftPaneRef,
 				callbacks,
 				currentX: changedTouch.clientX,
 				preventDefault: () => e.preventDefault(),
 				lockPane,
+				config,
+				edgeActivationWidthPx,
+				dragActivationDeltaPx,
 			});
 		}
 
@@ -266,22 +253,22 @@ export function useSwipeLeftPane() {
 			if (!draggingRef.current || draggingRef.current.isMouse) return;
 
 			const trackedId = draggingRef.current.activeTouchId;
-			let endedTracked = false;
-			for (let i = 0; i < e.changedTouches.length; i++) {
-				if (e.changedTouches[i].identifier === trackedId) {
-					endedTracked = true;
-					break;
-				}
-			}
-			if (!endedTracked) return;
+			if (!hasTrackedTouchEnded(e.changedTouches, trackedId)) return;
 
-			handleLeftDragEnd({ refs, leftPaneRef, callbacks, unlockPane });
+			handleLeftDragEnd({
+				refs,
+				leftPaneRef,
+				callbacks,
+				unlockPane,
+				config,
+				edgeActivationWidthPx,
+			});
 		}
 
 		function onTouchCancel() {
 			if (lockedPane === "right") return;
 			if (!draggingRef.current || draggingRef.current.isMouse) return;
-			handleDragCancel(refs, callbacks.onLeftDrag, unlockPane);
+			handleDragCancel({ refs, onDrag: callbacks.onDrag, onDeactivate: unlockPane });
 		}
 
 		function onMouseDown(e: MouseEvent) {
@@ -289,8 +276,14 @@ export function useSwipeLeftPane() {
 			if (isEditableTarget(e.target)) return;
 			if (e.button !== 0) return;
 
-			if (callbacks.getIsLeftOpen() || e.clientX <= EDGE_SWIPE_THRESHOLD_PX) {
-				handleDragStart(refs, e.clientX, e.clientY, null, true);
+			if (callbacks.getIsOpen() || e.clientX <= edgeActivationWidthPx) {
+				handleDragStart({
+					refs,
+					clientX: e.clientX,
+					clientY: e.clientY,
+					touchId: null,
+					isMouse: true,
+				});
 			}
 		}
 
@@ -300,11 +293,13 @@ export function useSwipeLeftPane() {
 
 			handleLeftDragMove({
 				refs,
-				leftPaneRef,
 				callbacks,
 				currentX: e.clientX,
 				preventDefault: () => e.preventDefault(),
 				lockPane,
+				config,
+				edgeActivationWidthPx,
+				dragActivationDeltaPx,
 			});
 		}
 
@@ -312,7 +307,14 @@ export function useSwipeLeftPane() {
 			if (lockedPane === "right") return;
 			if (!draggingRef.current || !draggingRef.current.isMouse) return;
 
-			handleLeftDragEnd({ refs, leftPaneRef, callbacks, unlockPane });
+			handleLeftDragEnd({
+				refs,
+				leftPaneRef,
+				callbacks,
+				unlockPane,
+				config,
+				edgeActivationWidthPx,
+			});
 		}
 
 		window.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -334,7 +336,18 @@ export function useSwipeLeftPane() {
 			window.removeEventListener("mousemove", onMouseMove);
 			window.removeEventListener("mouseup", onMouseUp);
 		};
-	}, [isSmallScreen, isLeftOpen, openLeft, closeLeft, lockedPane, setLockedPane, leftPaneRef]);
+	}, [
+		isSmallScreen,
+		isLeftOpen,
+		openLeft,
+		closeLeft,
+		lockedPane,
+		setLockedPane,
+		leftPaneRef,
+		config,
+		edgeActivationWidthPx,
+		dragActivationDeltaPx,
+	]);
 
 	return {
 		isLeftOpen,

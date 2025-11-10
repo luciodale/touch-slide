@@ -1,4 +1,5 @@
-import type { RefObject } from "react";
+import { type CSSProperties, type FunctionComponent, type RefObject, useMemo } from "react";
+import type { SwipePaneContextProps } from "./SwipePaneProvider";
 
 export type SidebarCallbacks = {
 	getIsOpen: () => boolean;
@@ -22,24 +23,78 @@ export type DragRefs = {
 };
 
 export type SwipeBarProps = {
-	transitionMsOpen?: number;
-	transitionMsClose?: number;
+	transitionMs?: number;
 	paneWidthPx?: number;
 	isAbsolute?: boolean;
 	edgeActivationWidthPx?: number;
 	dragActivationDeltaPx?: number;
 	showOverlay?: boolean;
 	closeSidebarOnOverlayClick?: boolean;
+	overlayBackgroundColor?: string;
 };
 
-export const TRANSITION_OPEN_MS = 200;
-export const TRANSITION_CLOSE_MS = 300;
+export type TLeftSwipeBar = SwipeBarProps & {
+	showToggle?: boolean;
+	ToggleComponent?: FunctionComponent<Required<Pick<SwipePaneContextProps, "isLeftOpen">>>;
+};
+
+export type TRightSwipeBar = SwipeBarProps & {
+	showToggle?: boolean;
+	ToggleComponent?: FunctionComponent<Required<Pick<SwipePaneContextProps, "isRightOpen">>>;
+};
+
+export const TRANSITION_MS = 200;
 export const EDGE_ACTIVATION_REGION_PX = 40;
 export const DRAG_ACTIVATION_DELTA_PX = 20;
 export const PANE_WIDTH_PX = 320;
 export const SHOW_OVERLAY = true;
 export const CLOSE_SIDEBAR_ON_OVERLAY_CLICK = true;
 export const IS_ABSOLUTE = false;
+export const DEFAULT_OVERLAY_BACKGROUND_COLOR = "rgba(0, 0, 0, 0.5)";
+
+export const DEFAULT_SIDEBAR_BACKGROUND_COLOR = "rgb(36,36,36)";
+
+export const swipeBarStyle = {
+	zIndex: 30,
+	top: 0,
+	bottom: 0,
+	width: 0,
+	flexShrink: 0,
+	overflowX: "hidden",
+	willChange: "transform",
+} satisfies CSSProperties;
+
+export const leftSwipeBarAbsoluteStyle = {
+	position: "fixed",
+	left: 0,
+	top: 0,
+	bottom: 0,
+} satisfies CSSProperties;
+
+export const rightSwipeBarAbsoluteStyle = {
+	position: "fixed",
+	right: 0,
+	top: 0,
+	bottom: 0,
+} satisfies CSSProperties;
+
+export const overlayStyle = {
+	position: "fixed",
+	zIndex: 20,
+	top: 0,
+	left: 0,
+	width: "100%",
+	height: "100%",
+	backgroundColor: DEFAULT_OVERLAY_BACKGROUND_COLOR,
+	transitionProperty: "opacity",
+	pointerEvents: "none",
+	opacity: 0,
+} satisfies CSSProperties;
+
+export const overlayIsOpenStyle = {
+	opacity: 1,
+	pointerEvents: "auto",
+} satisfies CSSProperties;
 
 export type ToggleProps = {
 	className?: string;
@@ -47,6 +102,13 @@ export type ToggleProps = {
 };
 
 export type PaneSide = "left" | "right";
+
+type TMergedSwipeBar<T extends PaneSide> = Required<SwipeBarProps> & {
+	showToggle?: boolean;
+	ToggleComponent?: T extends "left"
+		? FunctionComponent<Required<Pick<SwipePaneContextProps, "isLeftOpen">>>
+		: FunctionComponent<Required<Pick<SwipePaneContextProps, "isRightOpen">>>;
+};
 
 type ApplyOpenPaneStylesProps = {
 	ref: RefObject<HTMLDivElement | null>;
@@ -57,7 +119,7 @@ type ApplyOpenPaneStylesProps = {
 export const applyOpenPaneStyles = ({ ref, options, afterApply }: ApplyOpenPaneStylesProps) => {
 	requestAnimationFrame(() => {
 		if (!ref.current) return;
-		ref.current.style.transition = `transform ${options.transitionMsOpen}ms ease, width ${options.transitionMsOpen}ms ease`;
+		ref.current.style.transition = `transform ${options.transitionMs}ms ease, width ${options.transitionMs}ms ease`;
 
 		requestAnimationFrame(() => {
 			if (!ref.current) return;
@@ -86,7 +148,7 @@ export const applyClosePaneStyles = ({
 }: ApplyClosePaneStylesProps) => {
 	requestAnimationFrame(() => {
 		if (!ref.current) return;
-		ref.current.style.transition = `transform ${options.transitionMsClose}ms ease, width ${options.transitionMsClose}ms ease`;
+		ref.current.style.transition = `transform ${options.transitionMs}ms ease, width ${options.transitionMs}ms ease`;
 
 		requestAnimationFrame(() => {
 			if (!ref.current) return;
@@ -185,4 +247,51 @@ export const hasTrackedTouchEnded = (
 		}
 	}
 	return false;
+};
+
+export const useMergedOptions = <T extends PaneSide>(
+	options: TLeftSwipeBar | TRightSwipeBar,
+	globalOptions: Required<SwipeBarProps>,
+): TMergedSwipeBar<T> => {
+	const {
+		paneWidthPx,
+		transitionMs,
+		edgeActivationWidthPx,
+		dragActivationDeltaPx,
+		showOverlay,
+		closeSidebarOnOverlayClick,
+		isAbsolute,
+		overlayBackgroundColor,
+		showToggle,
+		ToggleComponent,
+	} = options;
+	return useMemo(
+		() =>
+			({
+				paneWidthPx: paneWidthPx ?? globalOptions.paneWidthPx,
+				transitionMs: transitionMs ?? globalOptions.transitionMs,
+				edgeActivationWidthPx: edgeActivationWidthPx ?? globalOptions.edgeActivationWidthPx,
+				dragActivationDeltaPx: dragActivationDeltaPx ?? globalOptions.dragActivationDeltaPx,
+				showOverlay: showOverlay ?? globalOptions.showOverlay,
+				closeSidebarOnOverlayClick:
+					closeSidebarOnOverlayClick ?? globalOptions.closeSidebarOnOverlayClick,
+				isAbsolute: isAbsolute ?? globalOptions.isAbsolute,
+				overlayBackgroundColor: overlayBackgroundColor ?? globalOptions.overlayBackgroundColor,
+				showToggle,
+				ToggleComponent,
+			}) as TMergedSwipeBar<T>,
+		[
+			paneWidthPx,
+			transitionMs,
+			edgeActivationWidthPx,
+			dragActivationDeltaPx,
+			showOverlay,
+			closeSidebarOnOverlayClick,
+			isAbsolute,
+			overlayBackgroundColor,
+			showToggle,
+			ToggleComponent,
+			globalOptions,
+		],
+	);
 };

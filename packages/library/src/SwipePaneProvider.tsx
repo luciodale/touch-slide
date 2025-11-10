@@ -1,6 +1,7 @@
 import { type ReactNode, createContext, useCallback, useRef, useState } from "react";
 import {
 	CLOSE_SIDEBAR_ON_OVERLAY_CLICK,
+	DEFAULT_OVERLAY_BACKGROUND_COLOR,
 	DRAG_ACTIVATION_DELTA_PX,
 	EDGE_ACTIVATION_REGION_PX,
 	IS_ABSOLUTE,
@@ -8,8 +9,7 @@ import {
 	type PaneSide,
 	SHOW_OVERLAY,
 	type SwipeBarProps,
-	TRANSITION_CLOSE_MS,
-	TRANSITION_OPEN_MS,
+	TRANSITION_MS,
 	applyClosePaneStyles,
 	applyDragPaneStyles,
 	applyOpenPaneStyles,
@@ -35,13 +35,13 @@ export const SwipePaneContext = createContext<SwipePaneContextProps | null>(null
 export const SwipePaneProvider = ({
 	children,
 	paneWidthPx,
-	transitionMsOpen,
-	transitionMsClose,
+	transitionMs,
 	edgeActivationWidthPx,
 	dragActivationDeltaPx,
 	showOverlay,
 	closeSidebarOnOverlayClick,
 	isAbsolute,
+	overlayBackgroundColor,
 }: { children: ReactNode } & SwipeBarProps) => {
 	const [lockedPane, setLockedPane] = useState<LockedPane>(null);
 	const [isLeftOpen, setIsLeftOpen] = useState(false);
@@ -50,13 +50,13 @@ export const SwipePaneProvider = ({
 	const rightPaneRef = useRef<HTMLDivElement>(null);
 	const [globalOptions] = useState<Required<SwipeBarProps>>({
 		paneWidthPx: paneWidthPx ?? PANE_WIDTH_PX,
-		transitionMsOpen: transitionMsOpen ?? TRANSITION_OPEN_MS,
-		transitionMsClose: transitionMsClose ?? TRANSITION_CLOSE_MS,
+		transitionMs: transitionMs ?? TRANSITION_MS,
 		edgeActivationWidthPx: edgeActivationWidthPx ?? EDGE_ACTIVATION_REGION_PX,
 		dragActivationDeltaPx: dragActivationDeltaPx ?? DRAG_ACTIVATION_DELTA_PX,
 		showOverlay: showOverlay ?? SHOW_OVERLAY,
 		closeSidebarOnOverlayClick: closeSidebarOnOverlayClick ?? CLOSE_SIDEBAR_ON_OVERLAY_CLICK,
 		isAbsolute: isAbsolute ?? IS_ABSOLUTE,
+		overlayBackgroundColor: overlayBackgroundColor ?? DEFAULT_OVERLAY_BACKGROUND_COLOR,
 	});
 
 	console.log("globalOptions", globalOptions);

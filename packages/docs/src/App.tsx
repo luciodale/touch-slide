@@ -1,11 +1,18 @@
-import { SidebarLeft, SidebarRight } from "@luciodale/swipe-pane";
+import { SidebarLeft, SidebarRight, useSwipePaneContext } from "@luciodale/swipe-pane";
 
 export function App() {
+	const { closePane, globalOptions } = useSwipePaneContext();
 	return (
 		<>
 			<div className="flex" style={{ height: "100dvh" }}>
 				<div className="relative flex h-full w-full overflow-hidden">
-					<SidebarLeft />
+					<SidebarLeft className="bg-red-800">
+						<div>
+							<button type="button" onClick={() => closePane("left", globalOptions)}>
+								close me from here
+							</button>
+						</div>
+					</SidebarLeft>
 					<div className="relative flex h-full max-w-full flex-1 flex-col overflow-hidden">
 						<div className="h-full relative flex w-full grow overflow-hidden">
 							<div className="flex flex-col transition-width relative h-full w-full flex-1 overflow-auto bg-presentation">

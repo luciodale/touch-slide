@@ -1,4 +1,4 @@
-import { SwipePaneProvider } from "@luciodale/swipe-pane";
+import { SwipeBarProvider } from "@luciodale/swipe-pane";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App";
@@ -8,9 +8,9 @@ const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
 
 ReactDOM.createRoot(rootElement).render(
-	<React.StrictMode>
-		<SwipePaneProvider>
-			<App />
-		</SwipePaneProvider>
-	</React.StrictMode>,
+  <React.StrictMode>
+    <SwipeBarProvider>
+      <App />
+    </SwipeBarProvider>
+  </React.StrictMode>
 );

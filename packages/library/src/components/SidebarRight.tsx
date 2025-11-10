@@ -1,59 +1,61 @@
 import type { ReactNode } from "react";
 import { ToggleRight } from "../ToggleRight";
 import {
-	DEFAULT_SIDEBAR_BACKGROUND_COLOR,
-	type SwipeBarProps,
-	type TRightSwipeBar,
-	rightSwipeBarAbsoluteStyle,
-	swipeBarStyle,
-	useMergedOptions,
+  DEFAULT_SIDEBAR_BACKGROUND_COLOR,
+  type SwipeBarProps,
+  rightSwipeBarAbsoluteStyle,
+  swipeBarStyle,
+  useSetMergedOptions,
 } from "../swipePaneShared";
 import { useSwipePaneContext } from "../useSwipePaneContext";
 import { useSwipeRightPane } from "../useSwipeRightPane";
 import { Overlay } from "./Overlay";
 
 export function SidebarRight({
-	className,
-	children,
-	...currentOptions
-}: SwipeBarProps &
-	TRightSwipeBar & {
-		className?: string;
-		children?: ReactNode;
-	}) {
-	const { globalOptions, isRightOpen, closePane, rightPaneRef } = useSwipePaneContext();
+  className,
+  children,
+  ToggleComponent,
+  ...currentOptions
+}: SwipeBarProps & {
+  className?: string;
+  children?: ReactNode;
+  ToggleComponent?: ReactNode;
+}) {
+  const { isRightOpen, closePane, rightPaneRef } = useSwipePaneContext();
 
-	const options = useMergedOptions<"right">(currentOptions, globalOptions);
-	useSwipeRightPane(options);
+  const options = useSetMergedOptions("right", currentOptions);
+  useSwipeRightPane(options);
 
-	return (
-		<>
-			{options.showOverlay && (
-				<Overlay
-					isCollapsed={!isRightOpen}
-					setCollapsed={() => closePane("right", options)}
-					closeSidebarOnClick={options.closeSidebarOnOverlayClick}
-					transitionMs={options.transitionMs}
-				/>
-			)}
+  return (
+    <>
+      {options.showOverlay && (
+        <Overlay
+          isCollapsed={!isRightOpen}
+          setCollapsed={() => closePane("right")}
+          closeSidebarOnClick={options.closeSidebarOnOverlayClick}
+          transitionMs={options.transitionMs}
+        />
+      )}
 
-			<ToggleRight
-				options={options}
-				showToggle={options.showToggle}
-				ToggleComponent={options.ToggleComponent}
-			/>
+      <ToggleRight
+        options={options}
+        showToggle={options.showToggle}
+        ToggleComponent={ToggleComponent}
+      />
 
-			<div
-				ref={rightPaneRef}
-				style={{
-					...swipeBarStyle,
-					...(options.isAbsolute ? rightSwipeBarAbsoluteStyle : {}),
-					...(!className ? { backgroundColor: DEFAULT_SIDEBAR_BACKGROUND_COLOR } : {}),
-				}}
-				className={className}
-			>
-				{children}
-			</div>
-		</>
-	);
+      <div
+        ref={rightPaneRef}
+        style={{
+          ...swipeBarStyle,
+          ...(options.isAbsolute ? rightSwipeBarAbsoluteStyle : {}),
+          ...(!className
+            ? { backgroundColor: DEFAULT_SIDEBAR_BACKGROUND_COLOR }
+            : {}),
+        }}
+        className={className}
+      >
+        {children}
+      </div>
+    </>
+  );
 }

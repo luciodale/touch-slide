@@ -96,6 +96,16 @@ export const overlayIsOpenStyle = {
 	pointerEvents: "auto",
 } satisfies CSSProperties;
 
+export const toggleStyle = {
+	position: "fixed",
+	zIndex: 15,
+	top: "50%",
+	transform: "translateY(-50%)",
+	width: "1px",
+	display: "flex",
+	justifyContent: "center",
+} satisfies CSSProperties;
+
 export type ToggleProps = {
 	className?: string;
 	transitionMs?: number;

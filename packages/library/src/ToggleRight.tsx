@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
 import type { SwipePaneContextProps } from "./SwipePaneProvider";
-import type { SwipeBarProps } from "./swipePaneShared";
+import { type SwipeBarProps, toggleStyle } from "./swipePaneShared";
 import { useSwipePaneContext } from "./useSwipePaneContext";
 import { cn } from "./utils";
 
@@ -22,14 +22,19 @@ export function ToggleRight({ options, showToggle = true, ToggleComponent }: Tog
 	const isCollapsed = !isRightOpen;
 
 	const style = {
-		transition: `transform ${options.transitionMsOpen}ms ease, opacity ${options.transitionMsOpen}ms ease`,
+		transition: `transform ${options.transitionMs}ms ease, opacity ${options.transitionMs}ms ease`,
 		rotationTopIndicator: "rotate(-15deg)",
 		rotationBottomIndicator: "rotate(15deg)",
 	};
 
 	return (
 		// 1px wide container
-		<div className="z-20 fixed top-1/2 -translate-y-1/2 flex w-px items-center justify-center right-0">
+		<div
+			style={{
+				...toggleStyle,
+				right: 0,
+			}}
+		>
 			<button
 				type="button"
 				onClick={() => {

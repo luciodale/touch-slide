@@ -1,36 +1,37 @@
 import { overlayIsOpenStyle, overlayStyle } from "../swipeSidebarShared";
 
 type TOverlay = {
-  isCollapsed: boolean;
-  setCollapsed: () => void;
-  closeSidebarOnClick?: boolean;
-  overlayBackgroundColor?: string;
-  transitionMs?: number;
+	isCollapsed: boolean;
+	setCollapsed: () => void;
+	closeSidebarOnClick?: boolean;
+	overlayBackgroundColor?: string;
+	overlayZIndex: number;
+	transitionMs?: number;
 };
 
 export function Overlay({
-  isCollapsed,
-  setCollapsed,
-  closeSidebarOnClick = true,
-  transitionMs,
-  overlayBackgroundColor,
+	isCollapsed,
+	setCollapsed,
+	closeSidebarOnClick = true,
+	transitionMs,
+	overlayBackgroundColor,
+	overlayZIndex,
 }: TOverlay) {
-  return (
-    <div
-      style={{
-        transitionDuration: `${transitionMs}ms`,
-        ...overlayStyle,
-        ...(!isCollapsed ? overlayIsOpenStyle : {}),
-        ...(overlayBackgroundColor
-          ? { backgroundColor: overlayBackgroundColor }
-          : {}),
-      }}
-      onMouseDown={(e) => {
-        if (closeSidebarOnClick) {
-          e.stopPropagation();
-          setCollapsed();
-        }
-      }}
-    />
-  );
+	return (
+		<div
+			style={{
+				transitionDuration: `${transitionMs}ms`,
+				...overlayStyle,
+				...(!isCollapsed ? overlayIsOpenStyle : {}),
+				...(overlayBackgroundColor ? { backgroundColor: overlayBackgroundColor } : {}),
+				zIndex: overlayZIndex,
+			}}
+			onMouseDown={(e) => {
+				if (closeSidebarOnClick) {
+					e.stopPropagation();
+					setCollapsed();
+				}
+			}}
+		/>
+	);
 }

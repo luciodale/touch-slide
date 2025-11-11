@@ -1,61 +1,63 @@
+import { Fragment } from "react/jsx-runtime";
 import { ToggleLeft } from "../ToggleLeft";
 import {
-  DEFAULT_SIDEBAR_BACKGROUND_COLOR,
-  type TSwipeSidebar,
-  leftSwipeBarAbsoluteStyle,
-  swipeBarStyle,
-  useSetMergedOptions,
+	DEFAULT_SIDEBAR_BACKGROUND_COLOR,
+	type TSwipeSidebar,
+	leftSwipeBarAbsoluteStyle,
+	swipeBarStyle,
+	useSetMergedOptions,
 } from "../swipeSidebarShared";
 import { useMediaQuery } from "../useMediaQuery";
-import { useSwipeLeftSidebar } from "../useSwipeLeftSidebar";
 import { useSwipeBarContext } from "../useSwipeBarContext";
+import { useSwipeLeftSidebar } from "../useSwipeLeftSidebar";
 import { Overlay } from "./Overlay";
 
 export function SwipeBarLeft({
-  className,
-  children,
-  ToggleComponent,
-  ...currentOptions
+	className,
+	children,
+	ToggleComponent,
+	...currentOptions
 }: TSwipeSidebar) {
-  const { isLeftOpen, closeSidebar, leftSidebarRef } = useSwipeBarContext();
+	if (children?.type === Fragment) {
+		throw new Error("Fragments is not allowed in SwipeBarLeft");
+	}
 
-  const options = useSetMergedOptions("left", currentOptions);
-  const isSmallScreen = useMediaQuery(options.mediaQueryWidth);
-  useSwipeLeftSidebar(options);
+	const { isLeftOpen, closeSidebar, leftSidebarRef } = useSwipeBarContext();
 
-  return (
-    <>
-      {options.showOverlay && (
-        <Overlay
-          isCollapsed={!isLeftOpen}
-          setCollapsed={() => closeSidebar("left")}
-          closeSidebarOnClick={options.closeSidebarOnOverlayClick}
-          transitionMs={options.transitionMs}
-          overlayBackgroundColor={options.overlayBackgroundColor}
-        />
-      )}
+	const options = useSetMergedOptions("left", currentOptions);
+	const isSmallScreen = useMediaQuery(options.mediaQueryWidth);
+	useSwipeLeftSidebar(options);
 
-      <ToggleLeft
-        options={options}
-        showToggle={options.showToggle}
-        ToggleComponent={ToggleComponent}
-      />
+	return (
+		<>
+			{options.showOverlay && (
+				<Overlay
+					isCollapsed={!isLeftOpen}
+					setCollapsed={() => closeSidebar("left")}
+					transitionMs={options.transitionMs}
+					overlayBackgroundColor={options.overlayBackgroundColor}
+					overlayZIndex={options.overlayZIndex}
+				/>
+			)}
 
-      <div
-        ref={leftSidebarRef}
-        style={{
-          ...swipeBarStyle,
-          ...(options.isAbsolute || isSmallScreen
-            ? leftSwipeBarAbsoluteStyle
-            : {}),
-          ...(!className
-            ? { backgroundColor: DEFAULT_SIDEBAR_BACKGROUND_COLOR }
-            : {}),
-        }}
-        className={className}
-      >
-        {children}
-      </div>
-    </>
-  );
+			<ToggleLeft
+				options={options}
+				showToggle={options.showToggle}
+				ToggleComponent={ToggleComponent}
+			/>
+
+			<div
+				ref={leftSidebarRef}
+				style={{
+					...swipeBarStyle,
+					...(options.isAbsolute || isSmallScreen ? leftSwipeBarAbsoluteStyle : {}),
+					...(!className ? { backgroundColor: DEFAULT_SIDEBAR_BACKGROUND_COLOR } : {}),
+					zIndex: options.swipeBarZIndex,
+				}}
+				className={className}
+			>
+				{children}
+			</div>
+		</>
+	);
 }

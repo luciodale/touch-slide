@@ -1,6 +1,6 @@
 {
 	"name": "@luciodale/swipe-bar",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": "Lucio D'Alessandro",
 	"repository": {
 		"type": "git",
@@ -8,6 +8,12 @@
 	},
 	"main": "dist/swipe-bar.umd.js",
 	"module": "dist/swipe-bar.es.js",
+	"exports": {
+		".": {
+			"import": "./dist/swipe-bar.es.js",
+			"require": "./dist/swipe-bar.umd.js"
+		}
+	},
 	"peerDependencies": {
 		"react": ">=16 || >=17 || >= 18 || >= 19",
 		"react-dom": ">=16 || >=17 || >= 18 || >=19"

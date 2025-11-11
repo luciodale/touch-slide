@@ -2,10 +2,10 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export const QuickStart = () => {
-  const snippets = [
-    {
-      title: "Add Provider",
-      code: `import { SwipeBarProvider } from "@luciodale/swipe-bar";
+	const snippets = [
+		{
+			title: "Add Provider",
+			code: `import { SwipeBarProvider } from "@luciodale/swipe-bar";
 
 function App() {
   return (
@@ -14,71 +14,70 @@ function App() {
     </SwipeBarProvider>
   );
 }`,
-    },
-    {
-      title: "Left Sidebar",
-      code: `import { SwipeBarLeft } from "@luciodale/swipe-bar";
+		},
+		{
+			title: "Left Sidebar",
+			code: `import { SwipeBarLeft } from "@luciodale/swipe-bar";
 
 <SwipeBarLeft className="bg-blue-500 ...">
   <nav>Your sidebar content</nav>
 </SwipeBarLeft>`,
-    },
-    {
-      title: "Right Sidebar",
-      code: `import { SwipeBarRight } from "@luciodale/swipe-bar";
+		},
+		{
+			title: "Right Sidebar",
+			code: `import { SwipeBarRight } from "@luciodale/swipe-bar";
 
 <SwipeBarRight className="bg-blue-500 ...">
   <div>Settings panel</div>
 </SwipeBarRight>`,
-    },
-  ];
+		},
+	];
 
-  return (
-    <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-2xl text-white">
-      <h2 className="text-xl font-semibold mb-4">Quick Start</h2>
-      <div className="space-y-3">
-        {snippets.map((snippet) => (
-          <div
-            key={snippet.title}
-            className="rounded-lg border border-white/10 bg-black/20 overflow-hidden"
-          >
-            <div className="px-3 py-2 text-xs text-emerald-300/90 font-medium border-b border-white/10">
-              {snippet.title}
-            </div>
-            <SyntaxHighlighter
-              language="typescript"
-              style={vscDarkPlus}
-              customStyle={{
-                margin: 0,
-                padding: "0.75rem",
-                background: "transparent",
-                fontSize: "0.75rem",
-                lineHeight: "1.5",
-              }}
-              codeTagProps={{
-                style: {
-                  fontFamily: "ui-monospace, monospace",
-                },
-              }}
-            >
-              {snippet.code}
-            </SyntaxHighlighter>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-2xl text-white">
+			<h2 className="text-xl font-semibold mb-4">Quick Start</h2>
+			<div className="space-y-3">
+				{snippets.map((snippet) => (
+					<div
+						key={snippet.title}
+						className="rounded-lg border border-white/10 bg-black/20 overflow-hidden"
+					>
+						<div className="px-3 py-2 text-xs text-emerald-300/90 font-medium border-b border-white/10">
+							{snippet.title}
+						</div>
+						<SyntaxHighlighter
+							language="typescript"
+							style={vscDarkPlus}
+							customStyle={{
+								margin: 0,
+								padding: "0.75rem",
+								background: "transparent",
+								fontSize: "0.75rem",
+								lineHeight: "1.5",
+							}}
+							codeTagProps={{
+								style: {
+									fontFamily: "ui-monospace, monospace",
+								},
+							}}
+						>
+							{snippet.code}
+						</SyntaxHighlighter>
+					</div>
+				))}
+			</div>
+		</div>
+	);
 };
 
 export const PropsConfiguration = () => {
-  const propsCode = `// Available props with defaults
+	const propsCode = `// Available props with defaults
 <SwipeBarProvider
   sidebarWidthPx={320}
-  transitionMs={200}
+  transitionMs={300}
   edgeActivationWidthPx={40}
   dragActivationDeltaPx={20}
   showOverlay={true}
-  closeSidebarOnOverlayClick={true}
   isAbsolute={false}
   overlayBackgroundColor="rgba(0, 0, 0, 0.5)"
   toggleIconColor="white"
@@ -86,6 +85,9 @@ export const PropsConfiguration = () => {
   toggleIconEdgeDistancePx={40}
   showToggle={true}
   mediaQueryWidth={640}
+  swipeBarZIndex={30}
+  toggleZIndex={15}
+  overlayZIndex={20}
 >
   {children}
 </SwipeBarProvider>
@@ -95,75 +97,66 @@ export const PropsConfiguration = () => {
   {/* content */}
 </SwipeBarLeft>`;
 
-  const keyPoints = [
-    {
-      title: "isAbsolute",
-      description:
-        "Use isAbsolute if you don't want the sidebar to move the content. The sidebar will overlay on top instead of pushing content. On mobile, the sidebar will automatically switch to isAbsolute true.",
-    },
-    {
-      title: "mediaQueryWidth",
-      description:
-        "Allows you to set a max width threshold for the swiping. You might not want it on desktop. Default is 640px.",
-    },
-    {
-      title: "Toggle Visibility",
-      description:
-        "The toggle button disappears if closeSidebarOnOverlayClick is true and the sidebar is open, since the overlay handles closing.",
-    },
-    {
-      title: "Programmatic Control",
-      description:
-        "You can take closeSidebar or openSidebar from the provider and use them in event handlers from virtually anywhere.",
-    },
-  ];
+	const keyPoints = [
+		{
+			title: "isAbsolute",
+			description:
+				"Use isAbsolute if you don't want the sidebar to move the content. The sidebar will overlay on top instead of pushing content. On mobile, the sidebar will automatically switch to isAbsolute true.",
+		},
+		{
+			title: "mediaQueryWidth",
+			description:
+				"Allows you to set a max width threshold for the swiping. You might not want it on desktop. Default is 640px.",
+		},
+		{
+			title: "Single Child Only",
+			description:
+				"The sidebar only accepts a single child. If you need to render multiple children, you can wrap them in a single parent element.",
+		},
+		{
+			title: "Programmatic Control",
+			description:
+				"You can take closeSidebar or openSidebar from the provider and use them in event handlers from virtually anywhere.",
+		},
+	];
 
-  return (
-    <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-2xl text-white">
-      <h2 className="text-xl font-semibold mb-4">Props & Configuration</h2>
+	return (
+		<div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-2xl text-white">
+			<h2 className="text-xl font-semibold mb-4">Props & Configuration</h2>
 
-      <div className="rounded-lg border border-white/10 bg-black/20 overflow-hidden mb-4">
-        <div className="px-3 py-2 text-xs text-emerald-300/90 font-medium border-b border-white/10">
-          All Available Props
-        </div>
-        <SyntaxHighlighter
-          language="typescript"
-          style={vscDarkPlus}
-          customStyle={{
-            margin: 0,
-            padding: "0.75rem",
-            background: "transparent",
-            fontSize: "0.75rem",
-            lineHeight: "1.5",
-          }}
-          codeTagProps={{
-            style: {
-              fontFamily: "ui-monospace, monospace",
-            },
-          }}
-        >
-          {propsCode}
-        </SyntaxHighlighter>
-      </div>
+			<div className="rounded-lg border border-white/10 bg-black/20 overflow-hidden mb-4">
+				<div className="px-3 py-2 text-xs text-emerald-300/90 font-medium border-b border-white/10">
+					All Available Props
+				</div>
+				<SyntaxHighlighter
+					language="typescript"
+					style={vscDarkPlus}
+					customStyle={{
+						margin: 0,
+						padding: "0.75rem",
+						background: "transparent",
+						fontSize: "0.75rem",
+						lineHeight: "1.5",
+					}}
+					codeTagProps={{
+						style: {
+							fontFamily: "ui-monospace, monospace",
+						},
+					}}
+				>
+					{propsCode}
+				</SyntaxHighlighter>
+			</div>
 
-      <div className="space-y-3">
-        <div className="text-white/70 text-xs font-medium mb-2">
-          Key Features
-        </div>
-        {keyPoints.map((point) => (
-          <div
-            key={point.title}
-            className="rounded-lg border border-white/10 bg-white/5 p-3"
-          >
-            <div className="text-sm font-medium text-indigo-300/90 mb-1">
-              {point.title}
-            </div>
-            <div className="text-xs text-white/70 leading-relaxed">
-              {point.description}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+			<div className="space-y-3">
+				<div className="text-white/70 text-xs font-medium mb-2">Key Features</div>
+				{keyPoints.map((point) => (
+					<div key={point.title} className="rounded-lg border border-white/10 bg-white/5 p-3">
+						<div className="text-sm font-medium text-indigo-300/90 mb-1">{point.title}</div>
+						<div className="text-xs text-white/70 leading-relaxed">{point.description}</div>
+					</div>
+				))}
+			</div>
+		</div>
+	);
 };

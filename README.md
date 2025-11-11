@@ -109,11 +109,10 @@ Configure global defaults for all sidebars:
 ```tsx
 <SwipeBarProvider
   sidebarWidthPx={320}
-  transitionMs={200}
+  transitionMs={300}
   edgeActivationWidthPx={40}
   dragActivationDeltaPx={20}
   showOverlay={true}
-  closeSidebarOnOverlayClick={true}
   isAbsolute={false}
   overlayBackgroundColor="rgba(0, 0, 0, 0.5)"
   toggleIconColor="white"
@@ -121,6 +120,9 @@ Configure global defaults for all sidebars:
   toggleIconEdgeDistancePx={40}
   showToggle={true}
   mediaQueryWidth={640}
+  swipeBarZIndex={30}
+  toggleZIndex={15}
+  overlayZIndex={20}
 >
   {children}
 </SwipeBarProvider>
@@ -139,7 +141,6 @@ Both `SwipeBarLeft` and `SwipeBarRight` accept the same props, which override pr
 | `edgeActivationWidthPx` | `number` | `40` | Touch zone width from screen edge to activate swipe |
 | `dragActivationDeltaPx` | `number` | `20` | Minimum drag distance to activate sidebar |
 | `showOverlay` | `boolean` | `true` | Show backdrop overlay when sidebar is open |
-| `closeSidebarOnOverlayClick` | `boolean` | `true` | Close sidebar when clicking overlay |
 | `isAbsolute` | `boolean` | `false` | Use absolute positioning (overlay mode) |
 | `overlayBackgroundColor` | `string` | `"rgba(0, 0, 0, 0.5)"` | Overlay background color |
 | `toggleIconColor` | `string` | `"white"` | Color of the built-in toggle icon |
@@ -147,6 +148,9 @@ Both `SwipeBarLeft` and `SwipeBarRight` accept the same props, which override pr
 | `toggleIconEdgeDistancePx` | `number` | `40` | Distance of toggle from screen edge |
 | `showToggle` | `boolean` | `true` | Show the toggle button |
 | `mediaQueryWidth` | `number` | `640` | Max screen width for swipe gestures (in pixels) |
+| `swipeBarZIndex` | `number` | `30` | Z-index for left and right swipe bars |
+| `toggleZIndex` | `number` | `15` | Z-index for left and right toggle buttons |
+| `overlayZIndex` | `number` | `20` | Z-index for the overlay backdrop |
 
 ### Context API
 
@@ -190,7 +194,6 @@ This is useful if you want swipe interactions only on mobile/tablet devices.
 ### Toggle Button Behavior
 
 The built-in toggle button automatically hides when:
-- The sidebar is open AND `closeSidebarOnOverlayClick` is `true`
 - The overlay is visible to handle closing instead
 
 ### Custom Toggles

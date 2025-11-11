@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { MEDIA_QUERY_WIDTH } from "./swipePaneShared";
 
-export function useMediaQuery(width: number): boolean {
+export function useMediaQuery(width = MEDIA_QUERY_WIDTH): boolean {
 	const QUERY = `(max-width: ${width}px)`;
 
 	const getMatches = (): boolean => {

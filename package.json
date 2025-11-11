@@ -28,7 +28,8 @@
 		"e2e-tests:headed": "bun run --filter swipe-bar-docs test:e2e:headed",
 		"e2e-tests:ci": "bun run --filter swipe-bar-docs test:e2e:ci",
 		"test": "bun run unit-tests:ci && bun run e2e-tests:ci",
-		"test:ci": "bun run unit-tests:ci && bun run e2e-tests:ci"
+		"test:ci": "bun run unit-tests:ci && bun run e2e-tests:ci",
+		"preview": "bun run --filter swipe-bar-docs preview"
 	},
 	"author": "Lucio D'Alessandro",
 	"license": "MIT",

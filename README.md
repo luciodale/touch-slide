@@ -6,7 +6,7 @@
 
 <div align="center">
   
-  [📖 Documentation](#) • [🎮 Live Demo](#) • [📦 NPM Package](https://www.npmjs.com/package/@luciodale/swipe-bar)
+  [🎮 LIVE DEMO](https://swipe-bar.netlify.app/) • [📦 NPM Package](https://www.npmjs.com/package/@luciodale/swipe-bar)
   
 </div>
 

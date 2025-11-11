@@ -1,7 +1,7 @@
 {
-	"name": "swipe-pane-docs",
+	"name": "swipe-bar-docs",
 	"version": "0.0.27",
-	"description": "Documentation and demo site for swipe-pane.",
+	"description": "Documentation and demo site for swipe-bar.",
 	"private": true,
 	"scripts": {
 		"dev": "vite",
@@ -15,7 +15,7 @@
 	"author": "Lucio D'Alessandro",
 	"license": "MIT",
 	"dependencies": {
-		"@luciodale/swipe-pane": "workspace:*",
+		"@luciodale/swipe-bar": "workspace:*",
 		"@tailwindcss/vite": "^4.1.16",
 		"clsx": "^2.1.1",
 		"tailwind-merge": "^3.3.1",

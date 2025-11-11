@@ -27,9 +27,5 @@
 		"native swiping"
 	],
 	"license": "MIT",
-	"types": "dist/index.d.ts",
-	"dependencies": {
-		"clsx": "^2.1.1",
-		"tailwind-merge": "^3.3.1"
-	}
+	"types": "dist/index.d.ts"
 }

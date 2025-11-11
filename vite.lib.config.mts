@@ -29,11 +29,11 @@ export default defineConfig({
     outDir: "packages/library/dist",
     emptyOutDir: true,
     lib: {
-      name: "LucioDaleReactSearchableDropdown",
+      name: "LucioDaleSwipeBar",
       entry: resolve(__dirname, "packages/library/src/index.ts"),
 
       formats: ["es", "umd"],
-      fileName: (format) => `react-searchable-dropdown.${format}.js`,
+      fileName: (format) => `swipe-bar.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

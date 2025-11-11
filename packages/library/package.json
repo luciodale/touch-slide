@@ -19,7 +19,7 @@
 		"react": ">=16 || >=17 || >= 18 || >= 19",
 		"react-dom": ">=16 || >=17 || >= 18 || >=19"
 	},
-	"description": "Sliding barls like in a native app, built with React.",
+	"description": "Toggling and swiping sidebars like in a native app, built with React. Inspired by the native iOS swipe gestures.",
 	"files": ["dist", "README.md"],
 	"keywords": [
 		"react",
@@ -31,7 +31,13 @@
 		"menu",
 		"sliding menu",
 		"swiping menu",
-		"native swiping"
+		"native swiping",
+		"toggling sidebars",
+		"toggling sidebar",
+		"toggling menu",
+		"toggling sliding menu",
+		"toggling swiping menu",
+		"toggle panel"
 	],
 	"license": "MIT",
 	"types": "dist/index.d.ts"

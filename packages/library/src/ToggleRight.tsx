@@ -32,7 +32,9 @@ export function ToggleRight({
         right: 0,
       }}
     >
-      {(!isRightOpen || (isRightOpen && !options.showOverlay)) && (
+      {(!isRightOpen ||
+        (isRightOpen && !options.showOverlay) ||
+        (isRightOpen && !options.closeSidebarOnOverlayClick)) && (
         <button
           type="button"
           onClick={() =>

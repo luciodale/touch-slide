@@ -39,6 +39,7 @@ type TSwipeSidebarContext = {
   closeSidebar: (side: TSidebarSide) => void;
   dragSidebar: (side: TSidebarSide, translateX: number | null) => void;
   globalOptions: Required<TSwipeBarOptions>;
+  setGlobalOptions: (options: Partial<Required<TSwipeBarOptions>>) => void;
   leftSidebarOptions: TSwipeBarOptions;
   rightSidebarOptions: TSwipeBarOptions;
   setLeftSidebarOptions: (options: TSwipeBarOptions) => void;
@@ -78,7 +79,9 @@ export const SwipeBarProvider = ({
   const rightSidebarRef = useRef<HTMLDivElement>(null);
   const leftToggleRef = useRef<HTMLDivElement>(null);
   const rightToggleRef = useRef<HTMLDivElement>(null);
-  const [globalOptions] = useState<Required<TSwipeBarOptions>>({
+  const [globalOptions, setGlobalOptions] = useState<
+    Required<TSwipeBarOptions>
+  >({
     sidebarWidthPx: sidebarWidthPx ?? PANE_WIDTH_PX,
     transitionMs: transitionMs ?? TRANSITION_MS,
     edgeActivationWidthPx: edgeActivationWidthPx ?? EDGE_ACTIVATION_REGION_PX,
@@ -96,6 +99,13 @@ export const SwipeBarProvider = ({
     showToggle: showToggle ?? SHOW_TOGGLE,
     mediaQueryWidth: mediaQueryWidth ?? MEDIA_QUERY_WIDTH,
   });
+
+  const updateGlobalOptions = useCallback(
+    (options: Partial<Required<TSwipeBarOptions>>) => {
+      setGlobalOptions((prev) => ({ ...prev, ...options }));
+    },
+    []
+  );
 
   const openSidebar = useCallback(
     (side: TSidebarSide) => {
@@ -154,6 +164,7 @@ export const SwipeBarProvider = ({
         closeSidebar,
         dragSidebar,
         globalOptions,
+        setGlobalOptions: updateGlobalOptions,
         leftSidebarOptions,
         rightSidebarOptions,
         setLeftSidebarOptions,

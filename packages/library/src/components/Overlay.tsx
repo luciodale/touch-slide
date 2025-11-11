@@ -4,6 +4,7 @@ type TOverlay = {
   isCollapsed: boolean;
   setCollapsed: () => void;
   closeSidebarOnClick?: boolean;
+  overlayBackgroundColor?: string;
   transitionMs?: number;
 };
 
@@ -12,6 +13,7 @@ export function Overlay({
   setCollapsed,
   closeSidebarOnClick = true,
   transitionMs,
+  overlayBackgroundColor,
 }: TOverlay) {
   return (
     <div
@@ -19,6 +21,9 @@ export function Overlay({
         transitionDuration: `${transitionMs}ms`,
         ...overlayStyle,
         ...(!isCollapsed ? overlayIsOpenStyle : {}),
+        ...(overlayBackgroundColor
+          ? { backgroundColor: overlayBackgroundColor }
+          : {}),
       }}
       onMouseDown={(e) => {
         if (closeSidebarOnClick) {

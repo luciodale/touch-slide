@@ -31,6 +31,7 @@ export function SwipeBarRight({
           setCollapsed={() => closeSidebar("right")}
           closeSidebarOnClick={options.closeSidebarOnOverlayClick}
           transitionMs={options.transitionMs}
+          overlayBackgroundColor={options.overlayBackgroundColor}
         />
       )}
 

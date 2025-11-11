@@ -1,273 +1,290 @@
-# React Searchable Dropdown [VIEW DEMO](https://react-searchable-dropdown.netlify.app/)
-
+# SwipeBar
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/luciodale/react-searchable-dropdown/main/packages/docs/public/react-searchable-dropdown-logo.svg" alt="React Searchable Dropdown Logo" width="200" height="200" />
+  <img src="https://raw.githubusercontent.com/luciodale/swipe-bar/main/packages/docs/public/logo.svg" alt="SwipeBar Logo" width="200" height="200" />
 </div>
 
-[NPM Package](https://www.npmjs.com/package/@luciodale/react-searchable-dropdown)
+<div align="center">
+  
+  [📖 Documentation](#) • [🎮 Live Demo](#) • [📦 NPM Package](https://www.npmjs.com/package/@luciodale/swipe-bar)
+  
+</div>
 
-FOR REACT 18 (last supported version) use version: 0.0.48-react-18
+## A native swipe bar experience
 
-A modern, accessible, and customizable dropdown component for React applications.
-
-I created this library because I was tired of piecing together different dropdown components to get the features I needed. You know the drill - one library has virtualization but looks terrible, another looks great but can't handle large lists, and yet another has a nice API but no way to create new options.
-
-
-What I really wanted was a dropdown that:
-- Handles large lists smoothly (virtualization)
-- Lets users create new options when they don't find what they're looking for
-- Looks good out of the box but is easy to style to match your project
-- Works with both simple string arrays and complex object arrays - no data transformation needed
-
-The good news? I built it! This library combines these essential features in a way that:
-- Works great right away with sensible defaults
-- Needs minimal setup for most cases
-- Styling is a breeze - just add your CSS classes
-- All the good stuff in one package, no more mixing and matching
+SwipeBar provides an intuitive, native-app-like experience for mobile and desktop sidebars. Swipe from the edge to open, drag to close, and enjoy smooth animations with full customization control.
 
 ## Features
 
-- 🔍 Real-time search filtering
-- ⌨️ Keyboard navigation support
-- 🌐 Portal rendering for overflow handling
-- 🔄 Smart positioning handling scrolling and flipping
-- 🎯 Single and multi-select variants
-- 📦 Optionally grouped dropdown options
-- 🎨 Fully customizable styling
-- 🚀 Virtualized list for performance
-- ✨ Create new options on the fly
-- ♿ Accessibility support
-- 🎭 Custom icons support
-- 🔒 Disabled state support
+- 📱 **Native Mobile Gestures** - Swipe from screen edges just like native apps
+- 🖱️ **Desktop Support** - Works seamlessly with mouse interactions
+- 🎨 **Fully Customizable** - Complete control over styling, animations, and behavior
+- 🎯 **Smart Positioning** - Automatically adapts between absolute and relative positioning
+- 🎭 **Custom Toggles** - Use built-in toggle icons or provide your own components
+- ⚡ **Performant** - Relies on transform and opacity properties
+- 🎚️ **Configurable Thresholds** - Fine-tune edge activation and drag sensitivity
+- 🌓 **Overlay Support** - Optional backdrop overlay with customizable colors
+- 📏 **Responsive** - Media query support for different screen sizes
+- 🔧 **Programmatic Control** - Open and close sidebars from anywhere in your app
 
 ## Installation
 
 ```bash
-npm install @luciodale/react-searchable-dropdown
+npm install @luciodale/swipe-bar
 # or
-yarn add @luciodale/react-searchable-dropdown
+yarn add @luciodale/swipe-bar
 # or
-bun add @luciodale/react-searchable-dropdown
+bun add @luciodale/swipe-bar
 ```
 
-## Option Types
+## Quick Start
 
-The components support two types of options:
+### 1. Add the Provider
 
-1. **String Array** - Simple array of strings:
+Wrap your app with `SwipeBarProvider`:
+
 ```tsx
-const options = ['Option 1', 'Option 2', 'Option 3'];
+import { SwipeBarProvider } from "@luciodale/swipe-bar";
+
+function App() {
+  return (
+    <SwipeBarProvider>
+      {/* Your app content */}
+    </SwipeBarProvider>
+  );
+}
 ```
 
-2. **Object Array** - Array of objects with required `label` and `value` properties, plus optional metadata:
+### 2. Add Left Sidebar
+
 ```tsx
-const options = [
-  { 
-    label: 'Option 1', 
-    value: '1',
-    description: 'This is option 1',
-    category: 'A',
-    // ... any other metadata
-  },
-  { 
-    label: 'Option 2', 
-    value: '2',
-    description: 'This is option 2',
-    category: 'B',
-    // ... any other metadata
+import { SwipeBarLeft } from "@luciodale/swipe-bar";
+
+<SwipeBarLeft className="bg-blue-500 ...">
+  <nav>Your sidebar content</nav>
+</SwipeBarLeft>
+```
+
+### 3. Add Right Sidebar
+
+```tsx
+import { SwipeBarRight } from "@luciodale/swipe-bar";
+
+<SwipeBarRight className="bg-blue-500 ...">
+  <div>Settings panel</div>
+</SwipeBarRight>
+```
+
+### 4. Programmatic Control
+
+Use the context hook to control sidebars from anywhere:
+
+```tsx
+import { useSwipeBarContext } from "@luciodale/swipe-bar";
+
+function MyComponent() {
+  const { openSidebar, closeSidebar, isLeftOpen, isRightOpen } = useSwipeBarContext();
+  
+  return (
+    <button onClick={() => openSidebar("left")}>
+      Open Left Sidebar
+    </button>
+  );
+}
+```
+
+## Props & Configuration
+
+### Provider Props
+
+Configure global defaults for all sidebars:
+
+```tsx
+<SwipeBarProvider
+  sidebarWidthPx={320}
+  transitionMs={200}
+  edgeActivationWidthPx={40}
+  dragActivationDeltaPx={20}
+  showOverlay={true}
+  closeSidebarOnOverlayClick={true}
+  isAbsolute={false}
+  overlayBackgroundColor="rgba(0, 0, 0, 0.5)"
+  toggleIconColor="white"
+  toggleIconSizePx={40}
+  toggleIconEdgeDistancePx={40}
+  showToggle={true}
+  mediaQueryWidth={640}
+>
+  {children}
+</SwipeBarProvider>
+```
+
+### Sidebar Props
+
+Both `SwipeBarLeft` and `SwipeBarRight` accept the same props, which override provider defaults:
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `className` | `string` | - | CSS classes for the sidebar container |
+| `ToggleComponent` | `ReactNode` | - | Custom toggle button component |
+| `sidebarWidthPx` | `number` | `320` | Width of the sidebar in pixels |
+| `transitionMs` | `number` | `200` | Animation duration in milliseconds |
+| `edgeActivationWidthPx` | `number` | `40` | Touch zone width from screen edge to activate swipe |
+| `dragActivationDeltaPx` | `number` | `20` | Minimum drag distance to activate sidebar |
+| `showOverlay` | `boolean` | `true` | Show backdrop overlay when sidebar is open |
+| `closeSidebarOnOverlayClick` | `boolean` | `true` | Close sidebar when clicking overlay |
+| `isAbsolute` | `boolean` | `false` | Use absolute positioning (overlay mode) |
+| `overlayBackgroundColor` | `string` | `"rgba(0, 0, 0, 0.5)"` | Overlay background color |
+| `toggleIconColor` | `string` | `"white"` | Color of the built-in toggle icon |
+| `toggleIconSizePx` | `number` | `40` | Size of the toggle icon |
+| `toggleIconEdgeDistancePx` | `number` | `40` | Distance of toggle from screen edge |
+| `showToggle` | `boolean` | `true` | Show the toggle button |
+| `mediaQueryWidth` | `number` | `640` | Max screen width for swipe gestures (in pixels) |
+
+### Context API
+
+```tsx
+const {
+  isLeftOpen,           // boolean - is left sidebar open
+  isRightOpen,          // boolean - is right sidebar open
+  openSidebar,          // (side: "left" | "right") => void
+  closeSidebar,         // (side: "left" | "right") => void
+  globalOptions,        // current global options
+  setGlobalOptions,     // update global options
+} = useSwipeBarContext();
+```
+
+## Key Concepts
+
+### isAbsolute Mode
+
+By default, sidebars push content to the side. Set `isAbsolute={true}` to make sidebars overlay on top of content instead:
+
+```tsx
+<SwipeBarLeft isAbsolute={true}>
+  {/* This sidebar will overlay content */}
+</SwipeBarLeft>
+```
+
+**Note:** On mobile (below `mediaQueryWidth`), sidebars automatically switch to absolute positioning for a better mobile experience.
+
+### Media Query Width
+
+Control when swipe gestures are enabled based on screen size:
+
+```tsx
+<SwipeBarProvider mediaQueryWidth={640}>
+  {/* Swipe gestures only work on screens ≤640px wide */}
+</SwipeBarProvider>
+```
+
+This is useful if you want swipe interactions only on mobile/tablet devices.
+
+### Toggle Button Behavior
+
+The built-in toggle button automatically hides when:
+- The sidebar is open AND `closeSidebarOnOverlayClick` is `true`
+- The overlay is visible to handle closing instead
+
+### Custom Toggles
+
+Replace the default toggle with your own component:
+
+```tsx
+<SwipeBarLeft 
+  ToggleComponent={
+    <button className="my-custom-toggle">
+      ☰
+    </button>
   }
-];
+>
+  {/* content */}
+</SwipeBarLeft>
 ```
 
-> **Important**: When using object options, you **must** specify the `searchOptionKeys` prop to define which fields should be used for filtering. This is a required prop for object options.
+## Examples
+
+### Basic Sidebar
 
 ```tsx
-<SearchableDropdown
-  options={options}
-  searchOptionKeys={['label']} // Required for object options
-  // ... other props
-/>
-```
+import { SwipeBarProvider, SwipeBarLeft } from "@luciodale/swipe-bar";
 
-The `searchOptionKeys` array tells the component which fields to search through when filtering options. For example, with the above configuration, searching for "A" would match options where solely the label contains "A".
-
-## Usage
-
-### Single Select
-
-```tsx
-import { SearchableDropdown } from '@luciodale/react-searchable-dropdown';
-import "@luciodale/react-searchable-dropdown/dist/assets/single-style.css";
-
-
-const options = [
-  { label: 'Option 1', value: '1' },
-  { label: 'Option 2', value: '2' },
-  // ...
-];
-
-function MyComponent() {
-  const [value, setValue] = useState<{label: string, value: string}>(options[0]);
-
+function App() {
   return (
-    <SearchableDropdown
-      options={options}
-      value={value}
-      setValue={setValue}
-      placeholder="Select an option..."
-      searchOptionKeys={['label']}
-    />
+    <SwipeBarProvider>
+      <SwipeBarLeft className="bg-gray-800 text-white p-4">
+        <h2>Navigation</h2>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </SwipeBarLeft>
+      
+      <main>
+        {/* Your main content */}
+      </main>
+    </SwipeBarProvider>
   );
 }
 ```
 
-### Multi Select
+### Glassmorphism Sidebar
 
 ```tsx
-import { SearchableDropdownMulti } from '@luciodale/react-searchable-dropdown';
-import "@luciodale/react-searchable-dropdown/dist/assets/multi-style.css";
+<SwipeBarLeft 
+  className="bg-white/10 backdrop-blur-2xl border-r border-white/20"
+  overlayBackgroundColor="rgba(0, 0, 0, 0.3)"
+>
+  {/* Glass effect sidebar content */}
+</SwipeBarLeft>
+```
 
+### Full-Width Mobile Sidebar
 
-const options = [
-  { label: 'Option 1', value: '1' },
-  { label: 'Option 2', value: '2' },
-  // ...
-];
+```tsx
+<SwipeBarLeft 
+  sidebarWidthPx={window.innerWidth}
+  isAbsolute={true}
+>
+  {/* Full screen mobile menu */}
+</SwipeBarLeft>
+```
 
-function MyComponent() {
-  const [values, setValues] = useState([]);
+### Programmatic Control
 
+```tsx
+function Header() {
+  const { openSidebar } = useSwipeBarContext();
+  
   return (
-    <SearchableDropdownMulti
-      options={options}
-      values={values}
-      setValues={setValues}
-      placeholder="Select options..."
-      searchOptionKeys={['label']}
-    />
+    <header>
+      <button onClick={() => openSidebar("left")}>Menu</button>
+      <h1>My App</h1>
+      <button onClick={() => openSidebar("right")}>Settings</button>
+    </header>
   );
 }
 ```
 
-[VIEW THE DEMO](https://react-searchable-dropdown.netlify.app/) for more examples.
+## Browser Support
 
-## API
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile Safari (iOS 12+)
+- Chrome Android (latest)
 
-### Common Props
-
-Both components share these common props:
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `options` | `string[] \| { label: string; value: string; [key: string]: any }[]` | Required | Array of options to display (strings or objects with label/value) |
-| `placeholder` | `string` | - | Placeholder text when no value is selected |
-| `disabled` | `boolean` | `false` | Whether the dropdown is disabled |
-| `debounceDelay` | `number` | `0` | Delay in ms before filtering options |
-| `searchOptionKeys` | `string[]` | Required for object options | Keys to search in object options |
-| `filterType` | `'CASE_SENSITIVE_EQUAL' \| 'EQUAL' \| 'STARTS_WITH' \| 'WORD_STARTS_WITH' \| 'CONTAINS' \| 'ACRONYM' \| 'MATCHES' \| 'NO_MATCH'` | `'CONTAINS'` | Type of search filtering |
-| `dropdownOptionsHeight` | `number` | `300` | Height of the dropdown options container |
-| `createNewOptionIfNoMatch` | `boolean` | `true` | Whether to allow creating new options |
-| `dropdownOptionNoMatchLabel` | `string` | `'No Match'` | Label shown when no matches are found |
-| `offset` | `number` | `5` | Distance in pixels between the trigger and dropdown |
-| `strategy` | `'absolute' \| 'fixed'` | `'absolute'` | Positioning strategy for the dropdown |
-| `DropdownIcon` | `React.ComponentType<{ toggled: boolean }>` | - | Custom dropdown icon component |
-| `searchQuery` | `string \| undefined` | - | Controlled search query value |
-| `onSearchQueryChange` | `(query: string \| undefined) => void` | - | Callback when search query changes |
-| `dropdownNoOptionsLabel` | `string` | - | Label shown when there are no options |
-| `onBlur` | `() => void` | - | Callback when dropdown loses focus |
-| `context` | `any` | - | Context value passed to react-virtuoso for grouped options |
-| `handleGroups` | `(matchingOptions: TDropdownOption[]) => { groupCounts: number[]; groupCategories: string[] }` | - | Function to group options and return counts and categories |
-| `groupContent` | `(index: number, groupCategories: string[], context: any) => React.ReactNode` | - | Function to render group headers |
-
-
-### Single Select Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `value` | `string \| { label: string; value: string } \| undefined` | Required | Currently selected value |
-| `setValue` | `(value: string \| { label: string; value: string } \| undefined) => void` | Required | Callback when value changes |
-
-### Multi Select Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `values` | `(string \| { label: string; value: string })[] \| undefined` | Required | Currently selected values |
-| `setValues` | `(values: (string \| { label: string; value: string })[]) => void` | Required | Callback when values change |
-| `ClearAllIcon` | `React.ComponentType` | - | Custom clear all icon component |
-| `onClearAll` | `() => void` | - | Callback when all values are cleared |
-| `onClearOption` | `(option: string \| { label: string; value: string }) => void` | - | Callback when a single option is cleared |
-| `deleteLastChipOnBackspace` | `boolean` | - | Remove last Chip when pressing backspace and the searchQuery is empty
-### Positioning
-
-The components use Floating UI for positioning and support two key props for customization:
-
-#### Offset
-The `offset` prop controls the distance in pixels between the trigger element and the dropdown. Default is `5`.
-
-```tsx
-<SearchableDropdown
-  offset={10} // 10px gap between trigger and dropdown
-  // ... other props
-/>
-```
-
-#### Strategy
-The `strategy` prop determines the positioning strategy:
-- `'absolute'` (default): Positions relative to the nearest positioned ancestor
-- `'fixed'`: Positions relative to the viewport, useful for modals or when breaking out of overflow containers
-
-```tsx
-<SearchableDropdown
-  strategy="fixed" // Use fixed positioning
-  // ... other props
-/>
-```
-
-### Styling
-
-Both components support extensive styling customization through className props:
-
-```tsx
-<SearchableDropdown
-  classNameSearchableDropdownContainer="custom-container"
-  classNameSearchQueryInput="custom-input"
-  classNameDropdownOptions="custom-options"
-  classNameDropdownOption="custom-option"
-  classNameDropdownOptionFocused="custom-option-focused"
-  classNameDropdownOptionSelected="custom-option-selected"
-  classNameDropdownOptionDisabled="custom-option-disabled"
-  classNameDropdownOptionLabel="custom-option-label"
-  classNameDropdownOptionLabelFocused="custom-option-label-focused"
-  classNameDropdownOptionNoMatch="custom-option-no-match"
-  classNameTriggerIcon="custom-trigger-icon"
-  classNameTriggerIconInvert="custom-trigger-icon-invert"
-  classNameDisabled="custom-disabled"
-/>
-```
-
-The multi-select variant includes additional class names for chips:
-
-```tsx
-<SearchableDropdownMulti
-  // ... common class names ...
-  classNameMultiSelectedOption="custom-chip"
-  classNameMultiSelectedOptionClose="custom-chip-close"
-  classNameClearAll="custom-clear-all"
-/>
-```
+Touch events and smooth animations are supported across all modern browsers.
 
 ## Contributing
 
-This library is in its early versions but has been battle-tested in production environments. While it's solid and reliable, there's always room for improvement! I'm open to:
+Contributions are welcome! Feel free to:
 
-- New feature ideas
-- Performance optimizations
-- Better accessibility
-- More examples and documentation
-- Bug reports and fixes
-
-Feel free to open issues or submit pull requests. 
+- Report bugs
+- Suggest new features
+- Submit pull requests
+- Improve documentation
 
 ## License
 

@@ -31,7 +31,9 @@ export function ToggleLeft({
         left: 0,
       }}
     >
-      {(!isLeftOpen || (isLeftOpen && !options.showOverlay)) && (
+      {(!isLeftOpen ||
+        (isLeftOpen && !options.showOverlay) ||
+        (isLeftOpen && !options.closeSidebarOnOverlayClick)) && (
         <button
           type="button"
           onClick={() =>

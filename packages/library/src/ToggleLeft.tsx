@@ -14,35 +14,37 @@ export function ToggleLeft({
   showToggle = true,
   ToggleComponent,
 }: ToggleProps) {
-  const { openPane } = useSwipePaneContext();
+  const { openPane, leftToggleRef, isLeftOpen, closePane } =
+    useSwipePaneContext();
 
   if (!showToggle) return null;
 
-  if (ToggleComponent) {
-    return (
-      <div style={{ zIndex: toggleWrapperStyle.zIndex }}>{ToggleComponent}</div>
-    );
-  }
-
   return (
     <div
+      ref={leftToggleRef}
       style={{
         ...toggleWrapperStyle,
+        transition: `transform ${options.transitionMs}ms ease, opacity ${options.transitionMs}ms ease`,
         left: 0,
       }}
     >
-      <button
-        type="button"
-        onClick={() => openPane("left")}
-        style={{
-          marginLeft: `${options.toggleIconEdgeDistancePx}px`,
-        }}
-      >
-        <ToggleIcon
-          size={options.toggleIconSizePx}
-          color={options.toggleIconColor}
-        />
-      </button>
+      {(!isLeftOpen || (isLeftOpen && !options.showOverlay)) && (
+        <button
+          type="button"
+          onClick={() => (isLeftOpen ? closePane("left") : openPane("left"))}
+          style={{
+            marginLeft: `${options.toggleIconEdgeDistancePx}px`,
+            ...(isLeftOpen ? { transform: "rotate(180deg)" } : {}),
+          }}
+        >
+          {ToggleComponent ?? (
+            <ToggleIcon
+              size={options.toggleIconSizePx}
+              color={options.toggleIconColor}
+            />
+          )}
+        </button>
+      )}
     </div>
   );
 }
